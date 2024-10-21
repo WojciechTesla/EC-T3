@@ -1,3 +1,4 @@
+import enums.DistanceType
 import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.sqrt

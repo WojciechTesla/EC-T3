@@ -50,50 +50,45 @@ def plotNodesAndEdges(df, indices, index):
     plt.xlabel('X Coordinate')
     plt.ylabel('Y Coordinate')
     plt.grid(True)
-    plt.savefig(f'node_visualization_testing_{index}.png')
+    plt.savefig(f'tspb_kregret_visualization.png')
     plt.close()
 
 def createMetricTable():
-    resultsRandom = pd.read_csv('EvolutionaryComputation/ResultsTSPA/result_random.csv')
-    resultsNNDf = pd.read_csv('EvolutionaryComputation/ResultsTSPA/result_nn.csv')
-    resultsNNAnyDf = pd.read_csv('EvolutionaryComputation/ResultsTSPA/result_nnany.csv')
-    resultsCycleDf = pd.read_csv('EvolutionaryComputation/ResultsTSPA/result_cycle.csv')
+    resultsRandom = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_random.csv')
+    resultsNNDf = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_nn.csv')
+    resultsNNAnyDf = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_nnany.csv')
+    resultsCycleDf = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_cycle.csv')
+    resultsKregretDf = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_kregret.csv')
+    resultsWeightedKregretDf = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_weighted_kregret.csv')
 
     resultsRandom['Method'] = 'Random'
     resultsNNDf['Method'] = 'Nearest Neighbor'
     resultsNNAnyDf['Method'] = 'Nearest Neighbor Any'
     resultsCycleDf['Method'] = 'Cycle'
+    resultsKregretDf['Method'] = 'K-Regret'
+    resultsWeightedKregretDf['Method'] = 'Weighted K-Regret'
 
-    aggregatedResults = pd.concat([resultsRandom, resultsNNDf, resultsNNAnyDf, resultsCycleDf])
+    aggregatedResults = pd.concat([resultsRandom, resultsNNDf, resultsNNAnyDf, resultsCycleDf, resultsKregretDf, resultsWeightedKregretDf])
 
     print(aggregatedResults)
 
 def main():
-    # file_path = f'EvolutionaryComputation/Results{tspVariant}/result_nodes.csv'
-    # tspVariant = "TSPB"
-    # dataframes = splitCSV(file_path)
-    # for i, df in enumerate(dataframes):
-    #     print(f"DataFrame {i}:")
-    #     print(df.head())
-    #     plotNodesAndEdges(df, i)
-    #     if i == 1:
-    #         break
 
-    # nodes_df = pd.read_csv('EvolutionaryComputation/src/main/resources/TSPA.csv', delimiter=';')
-    # nodes_df.columns = ['X', 'Y', 'Cost']
+    nodes_df = pd.read_csv('EvolutionaryComputation/src/main/resources/TSPB.csv', delimiter=';')
+    nodes_df.columns = ['X', 'Y', 'Cost']
     
-    # chosen_nodes_df = pd.read_csv('EvolutionaryComputation/ResultsTSPA/result_random_best_nodes.csv')
+    chosen_nodes_df = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_kregret_best_nodes.csv')
     
-    # chosen_indices = chosen_nodes_df['Index'].tolist()
-    # print("Chosen indices:", chosen_indices)
-    # filtered_nodes_df = nodes_df.loc[chosen_indices].reset_index(drop=True)
-    # print("Test", nodes_df.iloc[chosen_indices[0]-1])
-    # print("Filtered nodes DataFrame:")
-    # print(filtered_nodes_df)
+    chosen_indices = chosen_nodes_df['Index'].tolist()
+    print("Chosen indices:", chosen_indices)
+    filtered_nodes_df = nodes_df.loc[chosen_indices].reset_index(drop=True)
+    print("Test", nodes_df.iloc[chosen_indices[0]-1])
+    print("Filtered nodes DataFrame:")
+    print(filtered_nodes_df)
     
-    # plotNodesAndEdges(nodes_df, chosen_indices, 0)
+    plotNodesAndEdges(nodes_df, chosen_indices, 0)
     
-    createMetricTable()
+    # createMetricTable()
 
 if __name__ == '__main__':
     main()

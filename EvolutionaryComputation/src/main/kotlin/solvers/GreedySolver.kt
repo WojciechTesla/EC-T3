@@ -1,28 +1,38 @@
-class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Double, private val type: DistanceType) {
-    private val solutionSize = (nodes.size * percentage).toInt()
+package solvers
+
+import SolverParameters
+import enums.DistanceType
+import enums.HeuristicType
+import TSPNode
+import TSPSolution
+import kotlin.math.round
+
+class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Double, private val type: DistanceType) : Solver {
+    private val solutionSize = round((nodes.size * percentage)).toInt()
     var distanceMatrix: Array<DoubleArray>? = null
     var insertCostMatrix: Array<Array<DoubleArray>>? = null
     val overheadTime: MutableMap<String, Double> = mutableMapOf()
 
-    fun call(type: HeuristicType, optimized: Boolean) : Solution{
-        return when (type) {
+    override fun call(params: SolverParameters) : TSPSolution {
+        return when (params.heuristicType) {
             HeuristicType.RANDOM -> generateRandomSolution()
             HeuristicType.GREEDY_END -> generateGreedyEndPositionSolution()
-            HeuristicType.GREEDY_ANY -> generateGreedyBestPositionSolution(optimized)
-            HeuristicType.GREEDY_CYCLE -> generateGreedyBestCycleSolution(optimized)
+            HeuristicType.GREEDY_ANY -> generateGreedyBestPositionSolution(params.isOptimized)
+            HeuristicType.GREEDY_CYCLE -> generateGreedyBestCycleSolution(params.isOptimized)
+            else -> throw IllegalArgumentException("Heuristic type for this solver not supported")
         }
     }
 
     private fun generateDistanceMatrix() {
         val start = System.nanoTime()
         val distanceMatrix = Array(nodes.size) { DoubleArray(nodes.size) }
-        for (i in nodes.indices) {
-            for (j in nodes.indices) {
-                if (i == j) {
-                    distanceMatrix[i][j] = Double.MAX_VALUE
+        for (node1 in nodes.indices) {
+            for (node2 in nodes.indices) {
+                if (node1 == node2) {
+                    distanceMatrix[node1][node2] = Double.MAX_VALUE
                     continue
                 }
-                distanceMatrix[i][j] = nodes[i].calculateDistanceTo(nodes[j], type)
+                distanceMatrix[node1][node2] = nodes[node1].calculateDistanceTo(nodes[node2], type)
             }
         }
         this.distanceMatrix = distanceMatrix
@@ -58,15 +68,15 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         overheadTime["generateInsertCostMatrix"] = (end - start) / 1_000_000_000.0
     }
 
-    fun generateRandomSolution(): Solution {
-        val noOfNodes = (nodes.size * percentage).toInt()
+    fun generateRandomSolution(): TSPSolution {
+        val noOfNodes = round((nodes.size * percentage)).toInt()
         val shuffledIndices = nodes.indices.shuffled()
         val usedIndices = shuffledIndices.subList(0, noOfNodes)
         val shuffledNodes = usedIndices.map { nodes[it] }
-        return Solution(shuffledNodes, type, usedIndices)
+        return TSPSolution(shuffledNodes, type, usedIndices)
     }
 
-    fun generateGreedyEndPositionSolution(): Solution {
+    fun generateGreedyEndPositionSolution(): TSPSolution {
         if (distanceMatrix == null) {
             generateDistanceMatrix()
         }
@@ -90,10 +100,10 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
             usedIndices.add(index)
         }
 
-        return Solution(greedyNodes, type, usedIndices)
+        return TSPSolution(greedyNodes, type, usedIndices)
     }
 
-    fun generateGreedyBestPositionSolution(optimized: Boolean): Solution {
+    fun generateGreedyBestPositionSolution(optimized: Boolean): TSPSolution {
         if (insertCostMatrix == null) {
             generateInsertCostMatrix()
         }
@@ -177,10 +187,10 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         } else {
             TODO();
         }
-        return Solution(greedyNodes, type, usedIndices)
+        return TSPSolution(greedyNodes, type, usedIndices)
     }
 
-    fun generateGreedyBestCycleSolution(optimized: Boolean): Solution{
+    fun generateGreedyBestCycleSolution(optimized: Boolean): TSPSolution {
         if (insertCostMatrix == null) {
             generateInsertCostMatrix()
         }
@@ -238,6 +248,6 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
 //            println(i)
 //        }
 
-        return Solution(greedyNodes, type, usedIndices)
+        return TSPSolution(greedyNodes, type, usedIndices)
     }
 }

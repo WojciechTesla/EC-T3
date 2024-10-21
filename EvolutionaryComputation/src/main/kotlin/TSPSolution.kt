@@ -1,4 +1,6 @@
-data class Solution (val nodes: List<TSPNode>, val type: DistanceType, val indices: List<Int>) {
+import enums.DistanceType
+
+data class TSPSolution (val nodes: List<TSPNode>, val type: DistanceType, val indices: List<Int>) {
     var objectiveFunctionValue: Double? = null
 
     init {

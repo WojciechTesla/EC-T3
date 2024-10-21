@@ -1,19 +1,21 @@
 package utils
 
 import ExperimentResult
-import GreedySolver
-import HeuristicType
+import SolverParameters
+import solvers.GreedySolver
+import enums.HeuristicType
 import TSPNode
+import solvers.Solver
 
 object ExperimentUtil {
-    fun performExperiment(times: Int, solver: GreedySolver, heuristic: HeuristicType, optimized: Boolean): ExperimentResult {
+    fun performExperiment(times: Int, solver: Solver, params: SolverParameters): ExperimentResult {
         val results: MutableList<Double> = mutableListOf()
         val nodeMemory: MutableList<Array<TSPNode>> = mutableListOf()
         val start = System.nanoTime()
         var bestSolution: Double = Double.MAX_VALUE
         var bestIndices: List<Int> = emptyList()
         for (i in 0 until times) {
-            val solution = solver.call(heuristic, optimized)
+            val solution = solver.call(params)
             results.add(solution.objectiveFunctionValue!!)
             nodeMemory.add(solution.nodes.toTypedArray())
             if (solution.objectiveFunctionValue!! < bestSolution) {
