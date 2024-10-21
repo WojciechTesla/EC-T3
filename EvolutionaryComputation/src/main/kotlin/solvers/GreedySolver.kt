@@ -117,7 +117,6 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         availableIndices.remove(index)
         usedIndices.add(index)
 
-        // add 2nd node
         val distances = availableIndices.map { distanceMatrix!![index][it] }
         val minDistanceIndex = distances.indexOf(distances.minOrNull())
         index = availableIndices[minDistanceIndex]
@@ -127,31 +126,25 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
 
         if (optimized){
             while (greedyNodes.size < solutionSize) {
-//                println("Used indices: $usedIndices")
                 var minCost = Double.MAX_VALUE
                 var minInsertIndex: Int? = null
                 var minStartIndex: Int? = null
                 var beforeLoop: Boolean = false
                 for (i in -1 until usedIndices.size) {
-//                    println("Checking index: $i")
                     var start: Int
                     var end: Int
-//                    println("Checking after: $start")
                     for (insert in availableIndices) {
                         val insertCost: Double
-//                        println("Checking insert $insert, with index $i")
                         if (i == usedIndices.size - 1) {
                             end = usedIndices[i]
                             start = usedIndices[i]
                             insertCost = distanceMatrix!![end][insert]
                             beforeLoop = false
                         } else if (i == -1) {
-//                            println("2nd condition")
                             start = usedIndices[0]
                             insertCost = distanceMatrix!![insert][start]
                             beforeLoop = true
                         } else {
-//                            println("3rd condition")
                             end = usedIndices[i + 1]
                             start = usedIndices[i]
                             insertCost = insertCostMatrix!![start][end][insert]
@@ -165,7 +158,6 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
                             } else {
                                 minStartIndex = start
                             }
-//                            println("Setting indices: $minInsertIndex, $minStartIndex")
                         }
                     }
                 }
@@ -176,12 +168,9 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
                     } else {
                         insertAt = usedIndices.indexOf(minStartIndex) + 1
                     }
-//                    println("Min insert index: $minInsertIndex, Min start index: $minStartIndex, ${insertAt}")
                     availableIndices.remove(minInsertIndex)
                     usedIndices.add(insertAt, minInsertIndex)
                     greedyNodes.add(insertAt, nodes.elementAt(minInsertIndex))
-//                    println("Added node $minInsertIndex at index ${usedIndices.indexOf(minStartIndex) + 1}")
-//                    println("Used indices: $usedIndices")
                 }
             }
         } else {
@@ -204,7 +193,6 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         availableIndices.remove(index)
         usedIndices.add(index)
 
-        // add 2nd node
         val distances = availableIndices.map { distanceMatrix!![index][it] }
         val minDistanceIndex = distances.indexOf(distances.minOrNull())
         index = availableIndices[minDistanceIndex]
@@ -214,7 +202,6 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
 
         if (optimized){
             while (greedyNodes.size < solutionSize) {
-//                println("Used indices: $usedIndices")
                 var minCost = Double.MAX_VALUE
                 var minInsertIndex: Int? = null
                 var minStartIndex: Int? = null
@@ -227,26 +214,19 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
                             minCost = insertCost
                             minInsertIndex = insert
                             minStartIndex = start
-//                            println("Setting indices: $minInsertIndex, $minStartIndex")
                         }
                     }
                 }
                 if (minInsertIndex != null && minStartIndex != null) {
                     val insertAt = usedIndices.indexOf(minStartIndex) + 1
-//                    println("Min insert index: $minInsertIndex, Min start index: $minStartIndex, ${insertAt}")
                     availableIndices.remove(minInsertIndex)
                     usedIndices.add(insertAt, minInsertIndex)
                     greedyNodes.add(insertAt, nodes.elementAt(minInsertIndex))
-//                    println("Added node $minInsertIndex at index ${usedIndices.indexOf(minStartIndex) + 1}")
-//                    println("Used indices: $usedIndices")
                 }
             }
         } else {
             TODO();
         }
-//        for (i in usedIndices){
-//            println(i)
-//        }
 
         return TSPSolution(greedyNodes, type, usedIndices)
     }

@@ -21,6 +21,6 @@ fun main(args: Array<String>) {
         isOptimized = true)
     val experimentResult = ExperimentUtil.performExperiment(200, solverKRegret, params)
     println(experimentResult)
-    FileUtil.exportResultToCSV("result_kregret", "ResultsTSPB", experimentResult)
+//    FileUtil.exportResultToCSV("result_kregret", "ResultsTSPB", experimentResult)
 
 }

@@ -3,7 +3,7 @@ import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.sqrt
 
-data class TSPNode(val x: Double, val y: Double, val cost: Double) {
+data class TSPNode(val id: Int, val x: Double, val y: Double, val cost: Double) {
     fun calculateDistanceTo(other: TSPNode, type: DistanceType): Double {
         if (type == DistanceType.EUCLIDEAN) {
             return euclideanDistance(other)

@@ -7,11 +7,13 @@ object FileUtil {
 
     fun readCSV(csvFile: String): List<TSPNode> {
         val inputStream = this.javaClass.classLoader.getResourceAsStream(csvFile)
-        return inputStream.bufferedReader().lineSequence()
+        return inputStream
+            .bufferedReader()
+            .lineSequence()
             .filter { it.isNotBlank() }
-            .map {
-                line -> val (x, y, cost) = line.split(";").map { it.toDouble() }
-                TSPNode(x, y, cost)
+            .mapIndexed {
+                index, line -> val (x, y, cost) = line.split(";").map { it.toDouble() }
+                TSPNode(index, x, y, cost)
         }.toList()
     }
 
