@@ -5,11 +5,8 @@ import enums.HeuristicType
 
 class CostManager (private val params: SolverParameters) {
     private fun getRegretCost(sortedInsertCosts: List<Pair<Int, Double>>): Double {
-        var regretCost = 0.0;
-        for (i in 0 until params.k-1) {
-            regretCost += sortedInsertCosts[i].second - sortedInsertCosts[i+1].second
-        }
-        return regretCost
+        var lastIndex = if (params.k > sortedInsertCosts.size-1) sortedInsertCosts.size-1 else params.k-1
+        return sortedInsertCosts[0].second - sortedInsertCosts[lastIndex].second
     }
     fun getCost(sortedInsertCosts: List<Pair<Int, Double>>): Double {
         return when (params.heuristicType) {
