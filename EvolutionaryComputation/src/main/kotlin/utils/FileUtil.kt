@@ -21,6 +21,7 @@ object FileUtil {
         val metricFile = java.io.File("$folder/$fileName.csv")
         metricFile.writeText("Best Objective,Average Objective,Worst Objective,Time Taken\n")
         metricFile.appendText("${result.bestObjective}, ${result.averageObjective}, ${result.worstObjective}, ${result.timeTaken}\n")
+        metricFile.appendText("${result.averageObjective} (${result.bestObjective} – ${result.worstObjective}),,,")
 
         val bestFile = java.io.File("$folder/$fileName" + "_best_nodes.csv")
         bestFile.writeText("Index\n")

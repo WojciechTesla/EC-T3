@@ -4,37 +4,54 @@ import Change
 import SolverParameters
 import TSPNode
 import TSPSolution
-import enums.DistanceType
-import enums.HeuristicType
-import enums.LocalSearchType
-import enums.MoveType
+import enums.*
 import solvers.GreedySolver
+import kotlin.collections.emptyList as emptyList
 
 object LocalExperimentUtil {
 
     fun performExperiment(
         searchType: LocalSearchType,
         heuristicType: HeuristicType,
-        moveType: MoveType,
+        moveTypeExp: MoveTypeExp,
         fileString: String
     ): Pair<List<TSPSolution>, Double> {
         return when (searchType) {
-            LocalSearchType.GREEDY -> greedySearch(heuristicType, moveType, fileString)
-            LocalSearchType.STEEPEST -> steepestSearch(heuristicType, moveType, fileString)
+            LocalSearchType.GREEDY -> greedySearch(heuristicType, moveTypeExp, fileString)
+            LocalSearchType.STEEPEST -> steepestSearch(heuristicType, moveTypeExp, fileString)
             else -> throw IllegalArgumentException("Unsupported search")
         }
     }
 
     private fun greedySearch(
         heuristicType: HeuristicType,
-        moveType: MoveType,
+        moveTypeExp: MoveTypeExp,
         fileString: String
     ): Pair<List<TSPSolution>, Double> {
         val distanceMatrix = this.getDistanceMatrix(fileString)
         val nodes = FileUtil.readCSV(fileString)
         val solver = GreedySolver(nodes, 0.5, DistanceType.COSTEUCLIDEAN)
         var totalT = 0.0
-        val moves = this.getMoves(moveType)
+        var allMoves = emptyList<Pair<Pair<Int,Int>,MoveType>>().toMutableList()
+
+        if (moveTypeExp == MoveTypeExp.INTRA_EDGES)
+        {
+            var moves = this.getMoves(MoveType.INTRA_EDGES)
+            for (move in moves){
+                allMoves.add(Pair(move,MoveType.INTRA_EDGES))
+            }
+
+        }
+        else{
+            var moves = this.getMoves(MoveType.INTRA_NODES)
+            for (move in moves){
+                allMoves.add(Pair(move,MoveType.INTRA_NODES))
+            }
+        }
+        val moves = this.getMoves(MoveType.INTER_NODES)
+        for (move in moves){
+            allMoves.add(Pair(move,MoveType.INTER_NODES))
+        }
 
         val solutions = emptyList<TSPSolution>().toMutableList()
 
@@ -64,18 +81,18 @@ object LocalExperimentUtil {
             val start = System.nanoTime()
 
             while (flag) {
-                var shuffledMoves = moves.shuffled()
+                var shuffledMoves = allMoves.shuffled()
                 flag = false
                 for (move in shuffledMoves) {
 
-                    var c = Change(move, moveType, distanceMatrix)
+                    var c = Change(move.first, move.second, distanceMatrix)
                     var d = c.calculateDelta(solution, l)
                     if (d < 0) {
                         flag = true
-                        if (moveType == MoveType.INTER_NODES) {
-                            var temp = solution.nodes[move.first]
+                        if (move.second == MoveType.INTER_NODES) {
+                            var temp = solution.nodes[move.first.first]
                             solution = c.getNewSolution(solution, l)
-                            l[move.second] = temp
+                            l[move.first.second] = temp
                         } else {
                             solution = c.getNewSolution(solution, l)
 
@@ -100,14 +117,36 @@ object LocalExperimentUtil {
 
     private fun steepestSearch(
         heuristicType: HeuristicType,
-        moveType: MoveType,
+        moveTypeExp: MoveTypeExp,
         fileString: String
     ): Pair<List<TSPSolution>, Double> {
         val distanceMatrix = this.getDistanceMatrix(fileString)
         val nodes = FileUtil.readCSV(fileString)
         val solver = GreedySolver(nodes, 0.5, DistanceType.COSTEUCLIDEAN)
         var totalT = 0.0
-        val moves = this.getMoves(moveType)
+
+
+
+        var allMoves = emptyList<Pair<Pair<Int,Int>,MoveType>>().toMutableList()
+
+        if (moveTypeExp == MoveTypeExp.INTRA_EDGES)
+        {
+            var moves = this.getMoves(MoveType.INTRA_EDGES)
+            for (move in moves){
+                allMoves.add(Pair(move,MoveType.INTRA_EDGES))
+            }
+
+        }
+        else{
+            var moves = this.getMoves(MoveType.INTRA_NODES)
+            for (move in moves){
+                allMoves.add(Pair(move,MoveType.INTRA_NODES))
+            }
+        }
+        val moves = this.getMoves(MoveType.INTER_NODES)
+        for (move in moves){
+            allMoves.add(Pair(move,MoveType.INTER_NODES))
+        }
 
         val solutions = emptyList<TSPSolution>().toMutableList()
 
@@ -137,7 +176,7 @@ object LocalExperimentUtil {
 
 
             val start = System.nanoTime()
-            var changes = moves.map { move -> Change(move, moveType, distanceMatrix) }
+            var changes = allMoves.map { move -> Change(move.first, move.second, distanceMatrix) }
 
             while (flag) {
                 flag = false
@@ -146,7 +185,7 @@ object LocalExperimentUtil {
                 if (sorted[0].first < 0.0) {
                     flag = true
 
-                    if (moveType == MoveType.INTER_NODES) {
+                    if (sorted[0].second.type == MoveType.INTER_NODES) {
 
                         var temp = solution.nodes[sorted[0].second.move.first]
                         solution = sorted[0].second.getNewSolution(solution, l)
@@ -205,7 +244,7 @@ object LocalExperimentUtil {
                 l.add(Pair(i, j))
             }
         }
-        return l.toList()
+        return l
     }
 
 
@@ -219,7 +258,7 @@ object LocalExperimentUtil {
                 l.add(Pair(i, j))
             }
         }
-        return l.toList()
+        return l
     }
 
     private fun getIntraNodesMoves(): List<Pair<Int, Int>> {
@@ -229,7 +268,7 @@ object LocalExperimentUtil {
                 l.add(Pair(i, j))
             }
         }
-        return l.toList()
+        return l
     }
 
 }

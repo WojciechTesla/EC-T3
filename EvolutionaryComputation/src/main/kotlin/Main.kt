@@ -1,20 +1,28 @@
 import enums.HeuristicType
 import enums.LocalSearchType
 import enums.MoveType
+import enums.MoveTypeExp
+import utils.FileUtil
 import utils.LocalExperimentUtil
 
 fun main(args: Array<String>) {
 
 
-    var st = listOf("TSPA.csv","TSPB.csv")
-    for (val1 in HeuristicType.values())
+    val h = listOf(HeuristicType.RANDOM,HeuristicType.GREEDY_ANY)
+    var st = listOf("TSPA","TSPB")
+    for (val2 in LocalSearchType.values() )
     {
-        for (val2 in LocalSearchType.values())
+        for (val3 in MoveTypeExp.values())
         {
-            for (val3 in MoveType.values())
+            for (val1 in h)
             {
                 for (s in st){
-                    var results = LocalExperimentUtil.performExperiment(LocalSearchType.STEEPEST, heuristicType = HeuristicType.RANDOM,MoveType.INTRA_EDGES,"TSPA.csv")
+                    print(val1.name)
+                    print(val2.name)
+                    print(val3.name)
+                    print(s)
+                    print("\n")
+                    var results = LocalExperimentUtil.performExperiment(val2,val1,val3,s+".csv")
                     var totalTime = results.second
                     var objectives = results.first.map {result -> result.objectiveFunctionValue!!}
                     var pp = results.first.map {result -> Pair(result.objectiveFunctionValue,result)}
@@ -25,6 +33,7 @@ fun main(args: Array<String>) {
                         nodeMemory.add(res.nodes.toTypedArray())
                     }
                     var e = ExperimentResult(sorted[0].second.indices, sorted[0].first!!, objectives.average(),sorted[sorted.size-1].first!! , totalTime, nodeMemory)
+                    FileUtil.exportResultToCSV(val2.name + "_" + val3.name + "_" + val1.name,"Wojciech_Results"+ s,e)
                 }
             }
         }
