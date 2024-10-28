@@ -9,7 +9,6 @@ import enums.HeuristicType
 import enums.LocalSearchType
 import enums.MoveType
 import solvers.GreedySolver
-import java.io.Serializable
 
 object LocalExperimentUtil {
 
@@ -18,8 +17,8 @@ object LocalExperimentUtil {
         heuristicType: HeuristicType,
         moveType: MoveType,
         fileString: String
-    ): Serializable {
-        return when (searchType) {  // Access 'type' directly as it's a property now
+    ): Pair<List<TSPSolution>, Double> {
+        return when (searchType) {
             LocalSearchType.GREEDY -> greedySearch(heuristicType, moveType, fileString)
             LocalSearchType.STEEPEST -> steepestSearch(heuristicType, moveType, fileString)
             else -> throw IllegalArgumentException("Unsupported search")
@@ -30,7 +29,7 @@ object LocalExperimentUtil {
         heuristicType: HeuristicType,
         moveType: MoveType,
         fileString: String
-    ): Pair<MutableList<TSPSolution>, Double> {
+    ): Pair<List<TSPSolution>, Double> {
         val distanceMatrix = this.getDistanceMatrix(fileString)
         val nodes = FileUtil.readCSV(fileString)
         val solver = GreedySolver(nodes, 0.5, DistanceType.COSTEUCLIDEAN)
@@ -38,7 +37,6 @@ object LocalExperimentUtil {
         val moves = this.getMoves(moveType)
 
         val solutions = emptyList<TSPSolution>().toMutableList()
-
 
 
         for (i in nodes.indices) {
@@ -62,12 +60,6 @@ object LocalExperimentUtil {
 
             }
             var flag: Boolean = true
-
-
-
-            println(solution.objectiveFunctionValue)
-
-            //TODO start time here
 
             val start = System.nanoTime()
 
@@ -101,13 +93,8 @@ object LocalExperimentUtil {
             totalT += t
             solutions.add(solution)
 
-
-            //TODO Save solution and time
-
-            println(solution.objectiveFunctionValue)
         }
-        println(totalT / 1_000_000_000.0)
-        var results = Pair(solutions, totalT)
+        var results = Pair(solutions.toList(), totalT / 1_000_000_000.0)
         return results
     }
 
@@ -115,7 +102,7 @@ object LocalExperimentUtil {
         heuristicType: HeuristicType,
         moveType: MoveType,
         fileString: String
-    ): Pair<MutableList<TSPSolution>, Double> {
+    ): Pair<List<TSPSolution>, Double> {
         val distanceMatrix = this.getDistanceMatrix(fileString)
         val nodes = FileUtil.readCSV(fileString)
         val solver = GreedySolver(nodes, 0.5, DistanceType.COSTEUCLIDEAN)
@@ -149,14 +136,8 @@ object LocalExperimentUtil {
             var flag: Boolean = true
 
 
-
-            println(solution.objectiveFunctionValue)
-
-            //TODO start time here
-
             val start = System.nanoTime()
             var changes = moves.map { move -> Change(move, moveType, distanceMatrix) }
-
 
             while (flag) {
                 flag = false
@@ -185,13 +166,9 @@ object LocalExperimentUtil {
             totalT += t
             solutions.add(solution)
 
-
-            //TODO Save solution and time
-
-            println(solution.objectiveFunctionValue)
         }
-        println(totalT / 1_000_000_000.0)
-        var results = Pair(solutions, totalT)
+
+        var results = Pair(solutions.toList(), totalT / 1_000_000_000.0)
         return results
     }
 
@@ -213,7 +190,7 @@ object LocalExperimentUtil {
     }
 
     private fun getMoves(type: MoveType): List<Pair<Int, Int>> {
-        return when (type) {  // Access 'type' directly as it's a property now
+        return when (type) {
             MoveType.INTRA_NODES -> getIntraNodesMoves()
             MoveType.INTRA_EDGES -> getIntraEdgesMoves()
             MoveType.INTER_NODES -> getInterNodesMoves()
