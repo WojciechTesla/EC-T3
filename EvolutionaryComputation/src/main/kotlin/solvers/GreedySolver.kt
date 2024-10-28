@@ -16,9 +16,9 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
     override fun call(params: SolverParameters) : TSPSolution {
         return when (params.heuristicType) {
             HeuristicType.RANDOM -> generateRandomSolution()
-            HeuristicType.GREEDY_END -> generateGreedyEndPositionSolution()
-            HeuristicType.GREEDY_ANY -> generateGreedyBestPositionSolution(params.isOptimized)
-            HeuristicType.GREEDY_CYCLE -> generateGreedyBestCycleSolution(params.isOptimized)
+            HeuristicType.GREEDY_END -> generateGreedyEndPositionSolution(params.startingIndex)
+            HeuristicType.GREEDY_ANY -> generateGreedyBestPositionSolution(params.startingIndex, params.isOptimized)
+            HeuristicType.GREEDY_CYCLE -> generateGreedyBestCycleSolution(params.startingIndex, params.isOptimized)
             else -> throw IllegalArgumentException("Heuristic type for this solver not supported")
         }
     }
@@ -76,7 +76,7 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         return TSPSolution(shuffledNodes, type, usedIndices)
     }
 
-    fun generateGreedyEndPositionSolution(): TSPSolution {
+    fun generateGreedyEndPositionSolution(startingIndex: Int): TSPSolution {
         if (distanceMatrix == null) {
             generateDistanceMatrix()
         }
@@ -84,7 +84,11 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         val greedyNodes = mutableListOf<TSPNode>()
         val availableIndices = nodes.indices.toMutableList()
         val usedIndices = mutableListOf<Int>()
-        var index = (Math.random()*nodes.size).toInt()
+        //I'm sorry little one
+        //startingIndex is now in SolverParameters
+        var index = startingIndex
+
+
 
         greedyNodes.add(nodes.elementAt(index))
         availableIndices.remove(index)
@@ -103,14 +107,16 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         return TSPSolution(greedyNodes, type, usedIndices)
     }
 
-    fun generateGreedyBestPositionSolution(optimized: Boolean): TSPSolution {
+    fun generateGreedyBestPositionSolution(startingIndex: Int, optimized: Boolean): TSPSolution {
         if (insertCostMatrix == null) {
             generateInsertCostMatrix()
         }
 
         val greedyNodes = mutableListOf<TSPNode>()
         val availableIndices = nodes.indices.toMutableList()
-        var index = (Math.random()*nodes.size).toInt()
+        // same here
+//        var index = (Math.random()*nodes.size).toInt()
+        var index = startingIndex
         val usedIndices = mutableListOf<Int>()
 
         greedyNodes.add(nodes.elementAt(index))
@@ -179,14 +185,16 @@ class GreedySolver (private val nodes: List<TSPNode>, private val percentage: Do
         return TSPSolution(greedyNodes, type, usedIndices)
     }
 
-    fun generateGreedyBestCycleSolution(optimized: Boolean): TSPSolution {
+    fun generateGreedyBestCycleSolution(startingIndex: Int, optimized: Boolean): TSPSolution {
         if (insertCostMatrix == null) {
             generateInsertCostMatrix()
         }
 
         val greedyNodes = mutableListOf<TSPNode>()
         val availableIndices = nodes.indices.toMutableList()
-        var index = (Math.random()*nodes.size).toInt()
+        //same here
+//        var index = (Math.random()*nodes.size).toInt()
+        var index = startingIndex
         val usedIndices = mutableListOf<Int>()
 
         greedyNodes.add(nodes.elementAt(index))
