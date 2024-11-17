@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
 //        }
 //    }
     val N = 20
-    val results = CandidateMovesUtil.candidateMoves("TSPA.csv", N)
+    val results = CandidateMovesUtil.candidateMoves("TSPB.csv", N)
     var totalTime = results.second
     val objectives = results.first.map { result -> result.objectiveFunctionValue!! }
     var pp = results.first.map { result -> Pair(result.objectiveFunctionValue, result) }
@@ -52,7 +52,7 @@ fun main(args: Array<String>) {
         totalTime,
         nodeMemory
     )
-    FileUtil.exportResultToCSV("Candidate_Moves_" + N, "Candidate_Moves_TSPA", e)
+    FileUtil.exportResultToCSV("Candidate_Moves_" + N, "Candidate_Moves_TSPB", e)
     println(results.second)
 
 
