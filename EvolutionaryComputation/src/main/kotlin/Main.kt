@@ -1,5 +1,4 @@
-import utils.CandidateMovesUtil
-import utils.FileUtil
+import utils.*
 
 fun main(args: Array<String>) {
 
@@ -34,8 +33,31 @@ fun main(args: Array<String>) {
 //            }
 //        }
 //    }
-    val N = 20
-    val results = CandidateMovesUtil.candidateMoves("TSPB.csv", N)
+//    val N = 20
+//    val results = CandidateMovesUtil.candidateMoves("TSPB.csv", N)
+//    var totalTime = results.second
+//    val objectives = results.first.map { result -> result.objectiveFunctionValue!! }
+//    var pp = results.first.map { result -> Pair(result.objectiveFunctionValue, result) }
+//    var sorted = pp.sortedBy { it.first }
+//    var nodeMemory: MutableList<Array<TSPNode>> = mutableListOf()
+//    for (res in results.first) {
+//        nodeMemory.add(res.nodes.toTypedArray())
+//    }
+//    var e = ExperimentResult(
+//        sorted[0].second.indices,
+//        sorted[0].first!!,
+//        objectives.average(),
+//        sorted[sorted.size - 1].first!!,
+//        totalTime,
+//        nodeMemory
+//    )
+//    FileUtil.exportResultToCSV("Candidate_Moves_" + N, "Candidate_Moves_TSPB", e)
+//    println(results.second)
+
+
+
+//    val results = MultipleLocalSearch.steepestSearch("TSPB.csv")
+    val results = IteratedLocalSearch.steepestSearch("TSPA.csv")
     var totalTime = results.second
     val objectives = results.first.map { result -> result.objectiveFunctionValue!! }
     var pp = results.first.map { result -> Pair(result.objectiveFunctionValue, result) }
@@ -52,7 +74,7 @@ fun main(args: Array<String>) {
         totalTime,
         nodeMemory
     )
-    FileUtil.exportResultToCSV("Candidate_Moves_" + N, "Candidate_Moves_TSPB", e)
+    FileUtil.exportResultToCSV("Iterated_5" , "Iterated_TSPA", e)
     println(results.second)
 
 

@@ -40,17 +40,17 @@ def plotNodesAndEdges(df, indices, index):
     num_rows = len(df)
     for i in range(len(indices)):
         print(f"Index {i}: {indices[i]}")
-        start_x = df.iloc[indices[i]-1]['X']
-        start_y = df.iloc[indices[i]-1]['Y']
-        end_x = df.iloc[indices[(i + 1) % len(indices)]-1]['X']
-        end_y = df.iloc[indices[(i + 1) % len(indices)]-1]['Y']
+        start_x = df.iloc[indices[i]]['X']
+        start_y = df.iloc[indices[i]]['Y']
+        end_x = df.iloc[indices[(i + 1) % len(indices)]]['X']
+        end_y = df.iloc[indices[(i + 1) % len(indices)]]['Y']
         plt.plot([start_x, end_x], [start_y, end_y], 'k-')
     
     plt.title('Node and Edge Visualization')
     plt.xlabel('X Coordinate')
     plt.ylabel('Y Coordinate')
     plt.grid(True)
-    plt.savefig(f'tspb_kregret_visualization.png')
+    plt.savefig(f'Iterated_A.png')
     plt.close()
 
 def createMetricTable():
@@ -74,10 +74,10 @@ def createMetricTable():
 
 def main():
 
-    nodes_df = pd.read_csv('EvolutionaryComputation/src/main/resources/TSPB.csv', delimiter=';')
+    nodes_df = pd.read_csv('EvolutionaryComputation/src/main/resources/TSPA.csv', delimiter=';', header=None)
     nodes_df.columns = ['X', 'Y', 'Cost']
     
-    chosen_nodes_df = pd.read_csv('EvolutionaryComputation/ResultsTSPB/result_kregret_best_nodes.csv')
+    chosen_nodes_df = pd.read_csv('EvolutionaryComputation/Iterated_TSPA/Iterated_5_best_nodes.csv')
     
     chosen_indices = chosen_nodes_df['Index'].tolist()
     print("Chosen indices:", chosen_indices)

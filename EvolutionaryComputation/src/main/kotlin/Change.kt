@@ -1,7 +1,110 @@
 import enums.MoveType
 import java.util.Collections.swap
+import kotlin.math.pow
+import kotlin.time.times
 
 class Change(val move: Pair<Int, Int>, val type: MoveType, val distanceMatrix: Array<DoubleArray>) {
+
+    fun getHash(solution: TSPSolution, leftNodes: List<TSPNode>): Array<Pair<Int, Int>> {
+        val p = Pair(1,2)
+        var hash: Array<Pair<Int,Int>> = arrayOf(p,p,p,p)
+
+        if (type == MoveType.INTRA_EDGES){
+
+            val l = move.first
+            val h = move.second
+            val l1 = if (l-1<0) solution.nodes.size-1 else l-1;
+            val h1 = h-1
+
+            val il1 = solution.nodes[l1].id
+            val il = solution.nodes[l].id
+            val ih1 = solution.nodes[h1].id
+            val ih = solution.nodes[h].id
+
+
+            val R1 = if (il1 < il) Pair(il1,il) else Pair(il,il1)
+            val R2 = if (ih1 < ih) Pair(ih1,ih) else Pair(ih,ih1)
+
+            val A1 = if (il1 < ih1) Pair(il1, ih1) else Pair(ih1,il1)
+            val A2 = if (il < ih) Pair(il,ih) else Pair(ih,il)
+
+            if (R1.first < R2.first){
+                hash[0] = R1
+                hash[1] = R2
+            }
+            else {
+                hash[0] = R2
+                hash[1] = R1
+            }
+
+            if (A1.first < A2.first){
+                hash[2] = A1
+                hash[3] = A2
+            }
+            else
+            {
+                hash[2] = A2
+                hash[3] = A1
+            }
+            return hash
+
+
+
+        }
+        else
+        {
+            val f = move.first
+            val s = move.second
+            val f1 = if (f-1 < 0) solution.nodes.size-1 else f-1
+            val f2 = if (f+1 > solution.nodes.size-1) 0 else f+1
+
+            val If = solution.nodes[f].id
+            val If1 = solution.nodes[f1].id
+            val If2 = solution.nodes[f2].id
+            val Is = leftNodes[s].id
+
+            val R1 = if (If1 < If) Pair(If1,If) else Pair(If,If1)
+            val R2 = if (If < If2) Pair(If,If2) else Pair(If2,If)
+
+            val A1 = if (If1 < Is) Pair(If1, Is) else Pair(Is,If1)
+            val A2 = if (Is < If2) Pair(Is,If2) else Pair(If2,Is)
+
+            if (R1.first < R2.first){
+                hash[0] = R1
+                hash[1] = R2
+            }
+            else {
+                hash[0] = R2
+                hash[1] = R1
+            }
+
+            if (A1.first < A2.first){
+                hash[2] = A1
+                hash[3] = A2
+            }
+            else
+            {
+                hash[2] = A2
+                hash[3] = A1
+            }
+            return hash
+
+
+        }
+
+    }
+
+
+    fun checkWithElders(solution: TSPSolution, leftNodes: List<TSPNode>, hashMap: HashMap<Array<Pair<Int, Int>>, Double>): Double {
+
+        val hash = this.getHash(solution, leftNodes)
+        if (hashMap.containsKey(hash)) {
+            return hashMap[hash]!!
+        }
+        val delta = calculateDelta(solution, leftNodes)
+        hashMap[hash] = delta
+        return delta
+    }
 
     fun calculateDelta(solution: TSPSolution, leftNodes: List<TSPNode>): Double {
         return when (type) {  // Access 'type' directly as it's a property now
